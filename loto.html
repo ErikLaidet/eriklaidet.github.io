@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Générateur de grilles Loto prédictif</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; }
+    label { display: block; margin-top: 15px; }
+    button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
+    .result { margin-top: 25px; font-weight: bold; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>Générateur de grilles Loto prédictif</h1>
+  
+  <label>
+    Nombre de numéros chauds (3 à 5) :
+    <input type="number" id="nbChauds" min="3" max="5" value="3" />
+  </label>
+  
+  <label>
+    Nombre de numéros retardataires (0 à 2) :
+    <input type="number" id="nbRetard" min="0" max="2" value="2" />
+  </label>
+  
+  <label>
+    Numéro chance chaud uniquement ?
+    <input type="checkbox" id="chanceChaud" checked />
+  </label>
+  
+  <button onclick="genererGrille()">Générer une grille</button>
+  
+  <div class="result" id="result"></div>
+  
+  <script>
+    const numerosChauds = [3, 5, 8, 12, 13, 16, 36, 38, 39, 42, 47];
+    const numerosRetardataires = [1, 2, 9, 10, 11, 14, 18, 23, 24, 25, 27, 29, 30, 32, 33, 34, 41, 45, 48, 49];
+    const numerosChanceChauds = [9, 8, 5];
+    const numerosChanceTous = [1,2,3,4,5,6,7,8,9,10];
+
+    function getRandomSample(array, n) {
+      const copy = array.slice();
+      const result = [];
+      for (let i = 0; i < n; i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        result.push(copy[idx]);
+        copy.splice(idx, 1);
+      }
+      return result;
+    }
+
+    function genererGrille() {
+      const nbChauds = parseInt(document.getElementById('nbChauds').value);
+      const nbRetard = parseInt(document.getElementById('nbRetard').value);
+      const chanceChaud = document.getElementById('chanceChaud').checked;
+
+      if (nbChauds + nbRetard !== 5) {
+        document.getElementById('result').textContent = "Le total des numéros chauds + retardataires doit être égal à 5.";
+        return;
+      }
+
+      const choisisChauds = getRandomSample(numerosChauds, nbChauds);
+      const choisisRetard = getRandomSample(numerosRetardataires, nbRetard);
+      const grille = choisisChauds.concat(choisisRetard).sort((a,b) => a - b);
+
+      const numChance = chanceChaud ? 
+        numerosChanceChauds[Math.floor(Math.random() * numerosChanceChauds.length)] :
+        numerosChanceTous[Math.floor(Math.random() * numerosChanceTous.length)];
+
+      document.getElementById('result').textContent = `Grille : ${grille.join(', ')} + Chance : ${numChance}`;
+    }
+  </script>
+</body>
+</html>
